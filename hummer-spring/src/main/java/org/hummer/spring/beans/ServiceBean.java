@@ -29,7 +29,7 @@ public class ServiceBean implements InitializingBean {
 		ServiceMetadata metadata = new ServiceMetadata();
 		metadata.setServiceName(service);
 		metadata.setTarget(ref);
-		metadata.setVersion(service);
+		metadata.setVersion(version);
 		ServiceRegistry.registerService(metadata);
 	}
 
