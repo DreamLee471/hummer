@@ -21,4 +21,6 @@ public interface Client {
 	
 	public void sendRequest(RpcRequest request);
 	
+	public void close();
+	
 }

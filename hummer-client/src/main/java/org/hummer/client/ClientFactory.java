@@ -26,6 +26,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.hummer.api.client.Client;
@@ -52,6 +53,16 @@ public class ClientFactory {
 				ch.pipeline().addLast("handler", new ClientHandler());
 			}
 		});
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			
+			public void run() {
+				for(Entry<String, Client> client:clients.entrySet()){
+					client.getValue().close();
+				}
+			}
+		}));
+		
 	}
 	
 	

@@ -18,6 +18,7 @@ package org.hummer.client.proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -63,7 +64,35 @@ public class ProxyFactory {
 		
 		public ClientMethodInvocationHandler(ClientMetaData metadata){
 			this.metadata=metadata;
-			addressService.watch(metadata.getService(), metadata.getVersion());
+			if(metadata.getTargetUrl()!=null||metadata.getTargetUrls()!=null){
+				addressService=new AddressService() {
+					
+					public void watch(String service, String version) {
+					}
+					
+					public void registerTarget(String service, String version, String method,
+							String host) {
+					}
+					
+					public void registerTarget(String service, String version, String host) {
+					}
+					
+					public List<String> getTargetAddress(String service, String version,
+							String method) {
+						if(ClientMethodInvocationHandler.this.metadata.getTargetUrl()!=null){
+							return Arrays.asList(ClientMethodInvocationHandler.this.metadata.getTargetUrl());
+						}else{
+							return Arrays.asList(ClientMethodInvocationHandler.this.metadata.getTargetUrls());
+						}
+						
+					}
+					
+					public void deleteAddress(String host) {
+					}
+				};
+			}else{
+				addressService.watch(metadata.getService(), metadata.getVersion());
+			}
 		}
 		
 		public Object invoke(Object proxy, Method method, Object[] args)

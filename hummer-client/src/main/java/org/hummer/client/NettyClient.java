@@ -41,4 +41,8 @@ public class NettyClient implements Client {
 		channel.writeAndFlush(buf);
 	}
 
+	public void close() {
+		channel.close();
+	}
+
 }
