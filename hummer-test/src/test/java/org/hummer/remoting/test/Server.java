@@ -22,7 +22,6 @@ public class Server {
 		NettyServer server = new NettyServer();
 		server.init();
 		server.start();
-		System.in.read();
 	}
 
 }

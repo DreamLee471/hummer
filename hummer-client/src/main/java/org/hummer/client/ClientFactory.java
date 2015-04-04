@@ -30,13 +30,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.hummer.api.client.Client;
+import org.hummer.api.client.HostPort;
 import org.hummer.remoting.codec.HummerDecoder;
 
 public class ClientFactory {
 	
 	private static Bootstrap bootstrap;
 	
-	public static final Map<String, Client> clients=new ConcurrentHashMap<String, Client>();
+	public static final Map<HostPort, Client> clients=new ConcurrentHashMap<HostPort, Client>();
 	
 	static{
 		bootstrap=new Bootstrap();
@@ -54,10 +55,14 @@ public class ClientFactory {
 			}
 		});
 		
+		Thread heartBeat=new Thread(new HeartBeatThread());
+		heartBeat.setDaemon(true);
+		heartBeat.start();
+		
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			
 			public void run() {
-				for(Entry<String, Client> client:clients.entrySet()){
+				for(Entry<HostPort, Client> client:clients.entrySet()){
 					client.getValue().close();
 				}
 			}
@@ -67,11 +72,15 @@ public class ClientFactory {
 	
 	
 	public static Client getClent(String host,int port){
-		if(clients.get(host+":"+port)!=null) return clients.get(host+":"+port);
-		ChannelFuture future=bootstrap.connect(host, port);
+		return getClient(new HostPort(host, port));
+	}
+	
+	public static Client getClient(HostPort hostPort){
+		if(clients.get(hostPort)!=null) return clients.get(hostPort);
+		ChannelFuture future=bootstrap.connect(hostPort.getHost(), hostPort.getPort());
 		Channel channel=future.channel();
 		NettyClient client=new NettyClient(channel);
-		clients.put(host+":"+port, client);
+		clients.put(hostPort, client);
 		return client;
 	}
 

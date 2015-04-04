@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.hummer.service.test.IHello;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SpringServiceTest extends TestCase {
