@@ -19,7 +19,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 
-import org.hummer.api.RpcRequest;
+import org.hummer.api.Request;
 import org.hummer.api.client.Client;
 import org.hummer.api.protocol.HummerProtocol;
 import org.hummer.remoting.NettyByteBuffer;
@@ -35,7 +35,7 @@ public class NettyClient implements Client {
 		this.channel = channel;
 	}
 
-	public void sendRequest(RpcRequest request) {
+	public void sendRequest(Request request) {
 		ByteBuf buf=Unpooled.buffer(1024);
 		protocol.encode(request, new NettyByteBuffer(buf));
 		channel.writeAndFlush(buf);

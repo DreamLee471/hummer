@@ -15,11 +15,11 @@
  */
 package org.hummer.api.client;
 
-import org.hummer.api.RpcRequest;
+import org.hummer.api.Request;
 
 public interface Client {
 	
-	public void sendRequest(RpcRequest request);
+	public void sendRequest(Request request);
 	
 	public void close();
 	

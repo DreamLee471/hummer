@@ -15,8 +15,12 @@
  */
 package org.hummer.service.center;
 
+import org.hummer.api.HeartBeatRequest;
+import org.hummer.api.HeartBeatResponse;
+import org.hummer.api.RpcRequest;
 import org.hummer.api.RpcResponse;
 import org.hummer.api.event.RequestEvent;
+import org.hummer.util.SystemLoad;
 
 import com.lmax.disruptor.EventHandler;
 
@@ -24,9 +28,12 @@ public class RequestHandler implements EventHandler<RequestEvent> {
 	
 	public void onEvent(RequestEvent event, long sequence, boolean endOfBatch)
 			throws Exception {
-		RpcResponse resp=ServiceInvoker.getInstance().invoke(event.getRequest());
-		event.getChannel().writeAndFlush(resp);
-		
+		if(event.getRequest() instanceof RpcRequest){
+			RpcResponse resp=ServiceInvoker.getInstance().invoke((RpcRequest)event.getRequest());
+			event.getChannel().writeAndFlush(resp);
+		}else if(event.getRequest() instanceof HeartBeatRequest){
+			event.getChannel().writeAndFlush(HeartBeatResponse.create((HeartBeatRequest)event.getRequest(),(long)SystemLoad.getSystemLoad()));
+		}
 	}
 
 }

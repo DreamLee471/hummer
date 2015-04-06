@@ -115,7 +115,7 @@ public class ProxyFactory {
 			client.sendRequest(request);
 			
 			RpcResponse resp=null;
-			resp=future.get(metadata.getTimeout(), TimeUnit.MILLISECONDS);
+			resp=(RpcResponse)future.get(metadata.getTimeout(), TimeUnit.MILLISECONDS);
 			if(resp==null){
 				//TODO 重试
 				throw new RuntimeException("timeout");

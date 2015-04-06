@@ -15,7 +15,7 @@
  */
 package org.hummer.api;
 
-public final class HeartBeatRequest {
+public final class HeartBeatRequest implements Request{
 	
 	private final String host;
 	private final int port;

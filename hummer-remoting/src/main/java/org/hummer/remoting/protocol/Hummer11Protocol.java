@@ -60,6 +60,7 @@ public class Hummer11Protocol implements HummerProtocol{
 		byteBuf.writeInt(msg.getPort());
 		byteBuf.writeLong(msg.getRequestTimestamp());
 		byteBuf.writeLong(msg.getResponseTimestamp());
+		byteBuf.writeLong(msg.getSystemLoad());
 	}
 
 	private void encodeHeartBeatRequest(HeartBeatRequest msg,
@@ -163,7 +164,8 @@ public class Hummer11Protocol implements HummerProtocol{
 		int port=byteBuf.readInt();
 		long requestTimestamp=byteBuf.readLong();
 		long responseTimestamp=byteBuf.readLong();
-		return new HeartBeatResponse(host, port, requestTimestamp, responseTimestamp);
+		long systemLoad=byteBuf.readLong();
+		return new HeartBeatResponse(host, port, requestTimestamp, responseTimestamp,systemLoad);
 	}
 
 	private Object decodeResponse(ByteBufferWraper byteBuf) {

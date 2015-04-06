@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.hummer.api.ContextConstants;
 import org.hummer.api.InvocationContext;
-import org.hummer.api.RpcRequest;
+import org.hummer.api.Request;
 import org.hummer.api.event.Publisher;
 import org.hummer.service.ServiceLocator;
 
@@ -34,18 +34,16 @@ public class HummerServerHandler extends ChannelHandlerAdapter{
 	public static final List<Channel> channels=new CopyOnWriteArrayList<Channel>();
 	
 	@SuppressWarnings("unchecked")
-	private static final Publisher<RpcRequest> requestPublisher=ServiceLocator.loadService(Publisher.class, "request");
+	private static final Publisher<Request> requestPublisher=ServiceLocator.loadService(Publisher.class, "request");
 	
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
-		if(msg instanceof RpcRequest){
-			InvocationContext.putValue(ContextConstants.REMOTE_IP, ((InetSocketAddress)ctx.channel().remoteAddress()).getHostName());
-			InvocationContext.putValue(ContextConstants.REMOTE_PORT, ((InetSocketAddress)ctx.channel().remoteAddress()).getPort());
-			InvocationContext.putValue(ContextConstants.NETTY_CHANNEL, ctx.channel());
-			requestPublisher.publish(ctx.channel(), (RpcRequest)msg);
-		}
+		InvocationContext.putValue(ContextConstants.REMOTE_IP, ((InetSocketAddress)ctx.channel().remoteAddress()).getHostName());
+		InvocationContext.putValue(ContextConstants.REMOTE_PORT, ((InetSocketAddress)ctx.channel().remoteAddress()).getPort());
+		InvocationContext.putValue(ContextConstants.NETTY_CHANNEL, ctx.channel());
+		requestPublisher.publish(ctx.channel(), (Request)msg);
 	}
 	
 	@Override

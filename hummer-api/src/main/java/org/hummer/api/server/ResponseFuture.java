@@ -23,14 +23,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.hummer.api.Response;
 import org.hummer.api.RpcResponse;
+import org.hummer.api.client.HostPort;
 
-public class ResponseFuture implements Future<RpcResponse> {
+public class ResponseFuture implements Future<Response> {
 	
 	public static final Map<Long,ResponseFuture> RESPONSE_FUTURES=new ConcurrentHashMap<Long, ResponseFuture>();
+	
+	public static final Map<HostPort,ResponseFuture> HEART_BEAT_FUTURES=new ConcurrentHashMap<HostPort, ResponseFuture>();
 
 	private CountDownLatch latch=new CountDownLatch(1);
-	private RpcResponse resp;
+	private Response resp;
 	
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		return false;
@@ -44,7 +48,7 @@ public class ResponseFuture implements Future<RpcResponse> {
 		return resp!=null;
 	}
 
-	public RpcResponse get() throws InterruptedException, ExecutionException {
+	public Response get() throws InterruptedException, ExecutionException {
 		latch.await();
 		return resp;
 	}
@@ -54,7 +58,7 @@ public class ResponseFuture implements Future<RpcResponse> {
 		latch.countDown();
 	}
 
-	public RpcResponse get(long timeout, TimeUnit unit)
+	public Response get(long timeout, TimeUnit unit)
 			throws InterruptedException, ExecutionException, TimeoutException {
 		latch.await(timeout,unit);
 		return resp;

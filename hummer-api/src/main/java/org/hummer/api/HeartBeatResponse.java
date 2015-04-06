@@ -15,7 +15,9 @@
  */
 package org.hummer.api;
 
-public class HeartBeatResponse {
+import java.util.Date;
+
+public final class HeartBeatResponse implements Response{
 	
 	private final String host;
 	private final int port;
@@ -30,13 +32,16 @@ public class HeartBeatResponse {
 	 */
 	private final long responseTimestamp;
 	
+	private final long systemLoad;
+	
 	
 	public HeartBeatResponse(String host, int port, long requestTimestamp,
-			long responseTimestamp) {
+			long responseTimestamp,long systemLoad) {
 		this.host = host;
 		this.port = port;
 		this.requestTimestamp = requestTimestamp;
 		this.responseTimestamp = responseTimestamp;
+		this.systemLoad=systemLoad;
 	}
 	public String getHost() {
 		return host;
@@ -49,5 +54,11 @@ public class HeartBeatResponse {
 	}
 	public long getResponseTimestamp() {
 		return responseTimestamp;
+	}
+	public long getSystemLoad() {
+		return systemLoad;
+	}
+	public static HeartBeatResponse create(HeartBeatRequest request,long systemload){
+		return new HeartBeatResponse(request.getHost(), request.getPort(), request.getTimestamp(),new Date().getTime(),systemload);
 	}
 }
