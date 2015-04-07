@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.hummer.api.RpcRequest;
 import org.hummer.api.RpcResponse;
 import org.hummer.api.client.Client;
+import org.hummer.api.client.HostPort;
 import org.hummer.api.exception.HummerRemotingException;
 import org.hummer.api.server.ResponseFuture;
 import org.hummer.client.ClientFactory;
@@ -106,13 +107,13 @@ public class ProxyFactory {
 			request.setMethodDecorator(methodDesc);
 			request.setArgs(args);
 			List<String> targetAddress=addressService.getTargetAddress(metadata.getService(), metadata.getVersion(), methodDesc);
-			String target=lbService.select(targetAddress);
-			if(target==null) throw new RuntimeException("can't find target service");
+			HostPort host=lbService.select(targetAddress);
+			if(host==null) throw new RuntimeException("can't find target service");
 			ResponseFuture future=new ResponseFuture();
 			ResponseFuture.RESPONSE_FUTURES.put(request.getRequestId(), future);
-			String[] hostport=target.split(":");
-			Client client=ClientFactory.getClent(hostport[0], Integer.parseInt(hostport[1]));
+			Client client=ClientFactory.getClient(host);
 			client.sendRequest(request);
+			lbService.serviced(host);
 			
 			RpcResponse resp=null;
 			resp=(RpcResponse)future.get(metadata.getTimeout(), TimeUnit.MILLISECONDS);
@@ -120,6 +121,7 @@ public class ProxyFactory {
 				//TODO 重试
 				throw new RuntimeException("timeout");
 			}
+			
 			if(ResponseStatus.OK.getCode()==resp.getResponseCode()){
 				return resp.getData();
 			}else if(resp.getResponseCode()==500&&resp.getException()!=null){

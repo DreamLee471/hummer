@@ -21,10 +21,12 @@ import org.hummer.api.client.HostPort;
 
 public interface LoadBanlanceService {
 	
-	public String select(List<String> addresses);
+	public HostPort select(List<String> addresses);
 	
 	public void registerWeight(HostPort hostPort,long weight);
 	
 	public void rebuild();
+	
+	public void serviced(HostPort host);
 
 }
