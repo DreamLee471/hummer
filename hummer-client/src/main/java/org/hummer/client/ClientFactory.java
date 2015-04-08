@@ -28,6 +28,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.hummer.api.client.Client;
 import org.hummer.api.client.HostPort;
@@ -38,6 +41,8 @@ public class ClientFactory {
 	private static Bootstrap bootstrap;
 	
 	public static final Map<HostPort, Client> clients=new ConcurrentHashMap<HostPort, Client>();
+	
+	private static final ScheduledExecutorService executorServices=Executors.newScheduledThreadPool(1);
 	
 	static{
 		bootstrap=new Bootstrap();
@@ -55,9 +60,7 @@ public class ClientFactory {
 			}
 		});
 		
-		Thread heartBeat=new Thread(new HeartBeatThread());
-		heartBeat.setDaemon(true);
-		heartBeat.start();
+		executorServices.scheduleAtFixedRate(new HeartBeatThread(), 0, 1000, TimeUnit.MILLISECONDS);
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			

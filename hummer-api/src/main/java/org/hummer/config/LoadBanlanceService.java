@@ -23,7 +23,7 @@ public interface LoadBanlanceService {
 	
 	public HostPort select(List<String> addresses);
 	
-	public void registerWeight(HostPort hostPort,long weight);
+	public void registerWeight(HostPort hostPort,double weight);
 	
 	public void rebuild();
 	

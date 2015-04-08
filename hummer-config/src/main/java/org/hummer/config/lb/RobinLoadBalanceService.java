@@ -33,18 +33,18 @@ public class RobinLoadBalanceService implements LoadBanlanceService {
 	
 	private Distributions distributions=new Distributions();
 	
-	private LinkedHashMap<HostPort, Long> weights=new LinkedHashMap<HostPort, Long>();
+	private LinkedHashMap<HostPort, Double> weights=new LinkedHashMap<HostPort, Double>();
 	
-	private LinkedHashMap<HostPort, Long> standByWeights=new LinkedHashMap<HostPort, Long>();
+	private LinkedHashMap<HostPort, Double> standByWeights=new LinkedHashMap<HostPort, Double>();
 	
 	private long sumWs;
 	
 	public HostPort select(List<String> addresses) {
 		List<HostPort> hosts=new ArrayList<HostPort>(addresses.size());
-		List<Long> ws=new ArrayList<Long>(addresses.size());
+		List<Double> ws=new ArrayList<Double>(addresses.size());
 		for(String address:addresses){
 			HostPort host=new HostPort(address.split(":")[0], Integer.parseInt(address.split(":")[1]));
-			Long weight = weights.get(host);
+			Double weight = weights.get(host);
 			if(weight!=null){
 				hosts.add(host);
 				ws.add(weight);
@@ -68,31 +68,31 @@ public class RobinLoadBalanceService implements LoadBanlanceService {
 	 * @param ws
 	 * @return
 	 */
-	private HostPort hungry(List<HostPort> hosts, List<Long> ws) {
+	private HostPort hungry(List<HostPort> hosts, List<Double> ws) {
 		List<HostPortPair> hungrys=new ArrayList<HostPortPair>(hosts.size());
 		long allSeqs=distributions.getAllSeqs();
 		for(int i=0;i<hosts.size();i++){
 			HostPort host=hosts.get(i);
-			long hungry=ws.get(i) * allSeqs - sumWs * distributions.getDistributions(host);
+			Double hungry=ws.get(i) * allSeqs - sumWs * distributions.getDistributions(host);
 			hungrys.add(new HostPortPair(host, hungry));
 		}
 		return Collections.max(hungrys).getHost();
 	}
 
-	private long sum(Collection<Long> ws) {
+	private long sum(Collection<Double> ws) {
 		long sum=0;
-		for(Long l:ws){
+		for(Double l:ws){
 			sum+=l;
 		}
 		return sum;
 	}
 
-	public void registerWeight(HostPort hostPort, long weight) {
+	public void registerWeight(HostPort hostPort, double weight) {
 		standByWeights.put(hostPort, weight);
 	}
 
 	public void rebuild() {
-		LinkedHashMap<HostPort, Long> temp=null;
+		LinkedHashMap<HostPort, Double> temp=null;
 		temp=weights;
 		weights=standByWeights;
 		standByWeights=temp;
@@ -108,9 +108,9 @@ public class RobinLoadBalanceService implements LoadBanlanceService {
 	
 	private static class HostPortPair implements Comparable<HostPortPair>{
 		private final HostPort host;
-		private final long hugry;
+		private final Double hugry;
 		
-		public HostPortPair(HostPort host, long hugry) {
+		public HostPortPair(HostPort host, Double hugry) {
 			this.host = host;
 			this.hugry = hugry;
 		}
@@ -119,7 +119,7 @@ public class RobinLoadBalanceService implements LoadBanlanceService {
 			return host;
 		}
 
-		public long getHugry() {
+		public Double getHugry() {
 			return hugry;
 		}
 
