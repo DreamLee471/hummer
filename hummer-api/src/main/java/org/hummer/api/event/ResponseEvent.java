@@ -18,7 +18,6 @@ package org.hummer.api.event;
 import io.netty.channel.Channel;
 
 import org.hummer.api.Response;
-import org.hummer.api.RpcResponse;
 
 import com.lmax.disruptor.EventFactory;
 
@@ -39,7 +38,7 @@ public class ResponseEvent {
 		return response;
 	}
 
-	public void setResponse(RpcResponse response) {
+	public void setResponse(Response response) {
 		this.response = response;
 	}
 

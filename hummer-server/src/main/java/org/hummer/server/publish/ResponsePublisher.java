@@ -20,7 +20,7 @@ import io.netty.channel.Channel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.hummer.api.RpcResponse;
+import org.hummer.api.Response;
 import org.hummer.api.event.Publisher;
 import org.hummer.api.event.ResponseEvent;
 import org.hummer.config.GolbalConfigurationFactory;
@@ -34,7 +34,7 @@ import com.lmax.disruptor.SequenceBarrier;
  * @author dreamlee.lw
  *
  */
-public class ResponsePublisher implements Publisher<RpcResponse>{
+public class ResponsePublisher implements Publisher<Response>{
 	
 	public static final int BUFFER_SIZE=128;
 	
@@ -58,7 +58,7 @@ public class ResponsePublisher implements Publisher<RpcResponse>{
 	 * @param channel
 	 * @param resp
 	 */
-	public void publish(Channel channel,RpcResponse resp){
+	public void publish(Channel channel,Response resp){
 		long index=ringBuffer.next(1);
 		ResponseEvent event=ringBuffer.get(index);
 		event.setChannel(channel);

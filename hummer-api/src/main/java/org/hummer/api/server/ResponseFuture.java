@@ -53,7 +53,7 @@ public class ResponseFuture implements Future<Response> {
 		return resp;
 	}
 	
-	public void onResponse(RpcResponse resp){
+	public void onResponse(Response resp){
 		this.resp=resp;
 		latch.countDown();
 	}

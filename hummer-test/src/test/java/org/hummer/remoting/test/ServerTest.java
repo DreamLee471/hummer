@@ -46,20 +46,21 @@ public class ServerTest extends TestCase {
 		ExecutorService service = Executors.newFixedThreadPool(10);
 		final CountDownLatch latch=new CountDownLatch(100000);
 		final AtomicInteger timeout=new AtomicInteger();
-		for(int i=0;i<100000;i++){
-			service.submit(new Runnable() {
-				
-				public void run() {
-					try{
-						String ret=helloTarget.sayHello(buffer);
-					}catch(Exception e){
-						timeout.incrementAndGet();
-						e.printStackTrace();
-					}
-					latch.countDown();
-				}
-			});
-		}
+		System.out.println(helloTarget.sayHello(buffer));
+//		for(int i=0;i<100000;i++){
+//			service.submit(new Runnable() {
+//				
+//				public void run() {
+//					try{
+//						String ret=helloTarget.sayHello(buffer);
+//					}catch(Exception e){
+//						timeout.incrementAndGet();
+//						e.printStackTrace();
+//					}
+//					latch.countDown();
+//				}
+//			});
+//		}
 		latch.await();
 		System.out.println("cost:"+(System.currentTimeMillis()-start)/100000.0);
 		System.out.println("timeout:"+timeout.get());

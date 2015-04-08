@@ -18,21 +18,19 @@ package org.hummer.client;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
-import org.hummer.api.RpcResponse;
+import org.hummer.api.Response;
 import org.hummer.api.event.Publisher;
 import org.hummer.service.ServiceLocator;
 
 public class ClientHandler extends ChannelHandlerAdapter{
 	
 	@SuppressWarnings("unchecked")
-	private Publisher<RpcResponse> responsePublisher=ServiceLocator.loadService(Publisher.class, "response");
+	private Publisher<Response> responsePublisher=ServiceLocator.loadService(Publisher.class, "response");
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
-		if(msg instanceof RpcResponse){
-			responsePublisher.publish(ctx.channel(), (RpcResponse)msg);
-		}
+		responsePublisher.publish(ctx.channel(), (Response)msg);
 	}
 	
 }

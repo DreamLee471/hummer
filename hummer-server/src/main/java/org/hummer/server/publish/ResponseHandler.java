@@ -38,7 +38,7 @@ public class ResponseHandler implements EventHandler<ResponseEvent> {
 			HostPort hostPort=new HostPort(((HeartBeatResponse) resp).getHost(), ((HeartBeatResponse) resp).getPort());
 			ResponseFuture future = ResponseFuture.HEART_BEAT_FUTURES.remove(hostPort);
 			if(future!=null){
-				future.onResponse((RpcResponse)resp);
+				future.onResponse((Response)resp);
 			}
 		}
 		

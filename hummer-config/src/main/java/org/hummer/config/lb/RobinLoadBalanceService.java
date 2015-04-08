@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hummer.api.client.HostPort;
 import org.hummer.config.LoadBanlanceService;
 
@@ -30,6 +31,8 @@ import org.hummer.config.LoadBanlanceService;
  *
  */
 public class RobinLoadBalanceService implements LoadBanlanceService {
+	
+	private static final Logger logger=Logger.getLogger(RobinLoadBalanceService.class);
 	
 	private Distributions distributions=new Distributions();
 	
@@ -45,10 +48,8 @@ public class RobinLoadBalanceService implements LoadBanlanceService {
 		for(String address:addresses){
 			HostPort host=new HostPort(address.split(":")[0], Integer.parseInt(address.split(":")[1]));
 			Double weight = weights.get(host);
-			if(weight!=null){
-				hosts.add(host);
-				ws.add(weight);
-			}
+			hosts.add(host);
+			ws.add(weight==null?0:weight);
 		}
 		return hungry(hosts,ws);
 	}
@@ -76,7 +77,7 @@ public class RobinLoadBalanceService implements LoadBanlanceService {
 			Double hungry=ws.get(i) * allSeqs - sumWs * distributions.getDistributions(host);
 			hungrys.add(new HostPortPair(host, hungry));
 		}
-		return Collections.max(hungrys).getHost();
+		return hungrys.isEmpty()?null:Collections.max(hungrys).getHost();
 	}
 
 	private long sum(Collection<Double> ws) {
@@ -89,6 +90,7 @@ public class RobinLoadBalanceService implements LoadBanlanceService {
 
 	public void registerWeight(HostPort hostPort, double weight) {
 		standByWeights.put(hostPort, weight);
+		logger.info("register: "+hostPort+","+weight);
 	}
 
 	public void rebuild() {
