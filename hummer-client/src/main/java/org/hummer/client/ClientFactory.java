@@ -73,7 +73,6 @@ public class ClientFactory {
 		
 	}
 	
-	
 	public static Client getClient(String host,int port){
 		return getClient(new HostPort(host, port));
 	}

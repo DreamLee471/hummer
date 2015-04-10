@@ -18,7 +18,8 @@ package org.hummer.remoting;
 public enum ResponseStatus {
 
 	OK(200,"OK"),
-	NOT_FOUND(404,"service not found");
+	NOT_FOUND(404,"service not found"),
+	BAD_REQUEST(400,"bad request");
 	
 //	public static final ResponseStatus OK=new ResponseStatus(200, "ok");
 //	public static final ResponseStatus NOT_FOUND=new ResponseStatus(404, "service not found");

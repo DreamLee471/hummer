@@ -43,24 +43,23 @@ public class ServerTest extends TestCase {
 		metadata.setService(IHello.class.getName());
 		metadata.setVersion("1.0.0");
 		final IHello helloTarget=(IHello)ProxyFactory.getProxy(metadata);
-		ExecutorService service = Executors.newFixedThreadPool(10);
+		ExecutorService service = Executors.newFixedThreadPool(1);
 		final CountDownLatch latch=new CountDownLatch(100000);
 		final AtomicInteger timeout=new AtomicInteger();
-		System.out.println(helloTarget.sayHello(buffer));
-//		for(int i=0;i<100000;i++){
-//			service.submit(new Runnable() {
-//				
-//				public void run() {
-//					try{
-//						String ret=helloTarget.sayHello(buffer);
-//					}catch(Exception e){
-//						timeout.incrementAndGet();
-//						e.printStackTrace();
-//					}
-//					latch.countDown();
-//				}
-//			});
-//		}
+		for(int i=0;i<100000;i++){
+			service.submit(new Runnable() {
+				
+				public void run() {
+					try{
+						String ret=helloTarget.sayHello(buffer);
+					}catch(Exception e){
+						timeout.incrementAndGet();
+						e.printStackTrace();
+					}
+					latch.countDown();
+				}
+			});
+		}
 		latch.await();
 		System.out.println("cost:"+(System.currentTimeMillis()-start)/100000.0);
 		System.out.println("timeout:"+timeout.get());

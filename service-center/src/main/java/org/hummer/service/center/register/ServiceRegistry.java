@@ -40,7 +40,7 @@ public class ServiceRegistry {
 	/**
 	 * 服务方法定义
 	 */
-	private static Map<String, Map<String, ServiceMethodWraper>> SERVICES = new ConcurrentHashMap<String, Map<String, ServiceMethodWraper>>(
+	private static ConcurrentHashMap<String, Map<String, ServiceMethodWraper>> SERVICES = new ConcurrentHashMap<String, Map<String, ServiceMethodWraper>>(
 			256);
 	
 	private static NettyServer server=new NettyServer();
