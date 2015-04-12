@@ -162,6 +162,18 @@ public class GolbalConfigurationFactory {
 		return this;
 	}
 	
+	public GolbalConfigurationFactory supportHttp(String supportHttp){
+		check();
+		configuration.supportHttp=Boolean.valueOf(supportHttp);
+		return this;
+	}
+	
+	public GolbalConfigurationFactory ssl(String ssl){
+		check();
+		configuration.ssl=Boolean.valueOf(ssl);
+		return this;
+	}
+	
 	public GolbalConfiguration configure(){
 		if(!configed) configed=true;
 		return configuration;
@@ -187,6 +199,10 @@ public class GolbalConfigurationFactory {
 		private int serverEventChannelNum=4;
 		
 		private String serverCoreUse="ps/2";
+		
+		private boolean supportHttp=true;
+		
+		private boolean ssl=false;
 		
 		private GolbalConfiguration(){}
 		
@@ -236,6 +252,15 @@ public class GolbalConfigurationFactory {
 		public String getServerCoreUse() {
 			return serverCoreUse;
 		}
+
+		public boolean isSupportHttp() {
+			return supportHttp;
+		}
+
+		public boolean isSsl() {
+			return ssl;
+		}
+		
 	}
 
 }

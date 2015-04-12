@@ -29,6 +29,7 @@ import org.hummer.api.server.Server;
 import org.hummer.config.GolbalConfigurationFactory;
 import org.hummer.remoting.codec.HummerDecoder;
 import org.hummer.remoting.codec.HummerEncoder;
+import org.hummer.server.http.HttpServer;
 
 public class NettyServer implements Server {
 
@@ -68,6 +69,16 @@ public class NettyServer implements Server {
 		}
 		started.set(true);
 		bootstrap.bind(GolbalConfigurationFactory.getInstance().configure().getServerPort());
+		if(GolbalConfigurationFactory.getInstance().configure().isSupportHttp()){
+			new Thread(new Runnable() {
+				
+				public void run() {
+					HttpServer server=new HttpServer();
+					server.init();
+					server.start();
+				}
+			}, "hummer-http").start();
+		}
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			
 			public void run() {
