@@ -174,6 +174,12 @@ public class GolbalConfigurationFactory {
 		return this;
 	}
 	
+	public GolbalConfigurationFactory respType(String type){
+		check();
+		configuration.respType=type;
+		return this;
+	}
+	
 	public GolbalConfiguration configure(){
 		if(!configed) configed=true;
 		return configuration;
@@ -203,6 +209,8 @@ public class GolbalConfigurationFactory {
 		private boolean supportHttp=true;
 		
 		private boolean ssl=false;
+		
+		private String respType="json";
 		
 		private GolbalConfiguration(){}
 		
@@ -260,7 +268,10 @@ public class GolbalConfigurationFactory {
 		public boolean isSsl() {
 			return ssl;
 		}
-		
+
+		public String getRespType() {
+			return respType;
+		}
 	}
 
 }
