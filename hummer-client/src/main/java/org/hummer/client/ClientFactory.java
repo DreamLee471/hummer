@@ -44,6 +44,8 @@ public class ClientFactory {
 	
 	private static final ScheduledExecutorService executorServices=Executors.newScheduledThreadPool(1);
 	
+	private static HttpClient httpClient=new HttpClient();
+	
 	static{
 		bootstrap=new Bootstrap();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -74,10 +76,11 @@ public class ClientFactory {
 	}
 	
 	public static Client getClient(String host,int port){
-		return getClient(new HostPort(host, port));
+		return getClient(new HostPort(host, port),false);
 	}
 	
-	public static Client getClient(HostPort hostPort){
+	public static Client getClient(HostPort hostPort,boolean isHttp){
+		if(isHttp) return httpClient;
 		if(clients.get(hostPort)!=null) return clients.get(hostPort);
 		ChannelFuture future=bootstrap.connect(hostPort.getHost(), hostPort.getPort());
 		Channel channel=future.channel();

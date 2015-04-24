@@ -19,6 +19,10 @@ import org.hummer.api.Request;
 
 public interface Client {
 	
+	/**
+	 * 此方法必须为异步，不能阻塞调用
+	 * @param request
+	 */
 	public void sendRequest(Request request);
 	
 	public void close();

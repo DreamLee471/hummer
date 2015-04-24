@@ -111,7 +111,7 @@ public class ProxyFactory {
 			if(host==null) throw new RuntimeException("can't find target service");
 			ResponseFuture future=new ResponseFuture();
 			ResponseFuture.RESPONSE_FUTURES.put(request.getRequestId(), future);
-			Client client=ClientFactory.getClient(host);
+			Client client=ClientFactory.getClient(host,metadata.getInvokeType()==ClientMetaData.InvokeTypes.HTTP);
 			client.sendRequest(request);
 			lbService.serviced(host);
 			
