@@ -18,6 +18,8 @@ package org.hummer.spring;
 import org.hummer.spring.beans.ServiceBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -25,13 +27,14 @@ import org.w3c.dom.Element;
 
 public class ServicePaser implements BeanDefinitionParser {
 
-	public static final String ATTR_SERVICE="service";
+	public static final String ATTR_SERVICE="interface";
 	public static final String ATTR_VERSION="version";
 	public static final String ATTR_REF="target";
 	
 	private String service;
 	private String version;
 	private String ref;
+	private BeanNameGenerator beanNameGenerator=new DefaultBeanNameGenerator();
 	
 	
 	public BeanDefinition parse(Element ele, ParserContext context) {
@@ -45,7 +48,8 @@ public class ServicePaser implements BeanDefinitionParser {
 		root.getPropertyValues().add("service", service);
 		root.getPropertyValues().add("version", version);
 		root.getPropertyValues().add("ref", new RuntimeBeanReference(ref));
-		return root;
+		context.getRegistry().registerBeanDefinition(beanNameGenerator.generateBeanName(root, context.getRegistry()), root);
+		return null;
 	}
 
 }

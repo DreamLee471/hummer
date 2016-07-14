@@ -17,20 +17,20 @@ package org.hummer.api.event;
 
 import io.netty.channel.Channel;
 
-import org.hummer.api.RpcRequest;
+import org.hummer.api.Request;
 
 import com.lmax.disruptor.EventFactory;
 
 public class RequestEvent {
 
-	private RpcRequest request;
+	private Request request;
 	private Channel channel;
 
-	public RpcRequest getRequest() {
+	public Request getRequest() {
 		return request;
 	}
 
-	public void setRequest(RpcRequest request) {
+	public void setRequest(Request request) {
 		this.request = request;
 	}
 

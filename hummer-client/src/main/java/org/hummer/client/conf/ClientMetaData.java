@@ -17,6 +17,12 @@ package org.hummer.client.conf;
 
 public class ClientMetaData {
 	
+	public static interface InvokeTypes{
+		public static final int RPC=0;	
+		public static final int HTTP=1;
+		public static final int HTTPS=2;
+	}
+	
 	/**
 	 * 服务名
 	 */
@@ -41,6 +47,18 @@ public class ClientMetaData {
 	 * 是否单元化
 	 */
 	private boolean unit;
+	
+	/**
+	 * 设置targetUrl时将采用直连，不走注册中心
+	 */
+	private String targetUrl;
+	
+	/**
+	 * 多个targetUrl,随机路由
+	 */
+	private String targetUrls;
+	
+	private int invokeType;
 
 	public String getService() {
 		return service;
@@ -82,4 +100,28 @@ public class ClientMetaData {
 		this.unit = unit;
 	}
 
+	public String getTargetUrl() {
+		return targetUrl;
+	}
+
+	public void setTargetUrl(String targetUrl) {
+		this.targetUrl = targetUrl;
+	}
+
+	public String getTargetUrls() {
+		return targetUrls;
+	}
+
+	public void setTargetUrls(String targetUrls) {
+		this.targetUrls = targetUrls;
+	}
+
+	public int getInvokeType() {
+		return invokeType;
+	}
+
+	public void setInvokeType(int invokeType) {
+		this.invokeType = invokeType;
+	}
+	
 }

@@ -19,4 +19,6 @@ public interface Server extends LifeCycle {
 	
 	public boolean isStarted();
 	
+	public boolean isPaused();
+	
 }

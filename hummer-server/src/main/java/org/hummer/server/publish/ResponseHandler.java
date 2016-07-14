@@ -15,7 +15,10 @@
  */
 package org.hummer.server.publish;
 
+import org.hummer.api.HeartBeatResponse;
+import org.hummer.api.Response;
 import org.hummer.api.RpcResponse;
+import org.hummer.api.client.HostPort;
 import org.hummer.api.event.ResponseEvent;
 import org.hummer.api.server.ResponseFuture;
 
@@ -25,11 +28,19 @@ public class ResponseHandler implements EventHandler<ResponseEvent> {
 
 	public void onEvent(ResponseEvent event, long arg1, boolean arg2)
 			throws Exception {
-		RpcResponse resp=event.getResponse();
-		
-		ResponseFuture future = ResponseFuture.RESPONSE_FUTURES.remove(resp.getRequestId());
-		if(future!=null){
-			future.onResponse(resp);
+		Response resp=event.getResponse();
+		if(resp instanceof RpcResponse){
+			ResponseFuture future = ResponseFuture.RESPONSE_FUTURES.remove(((RpcResponse) resp).getRequestId());
+			if(future!=null){
+				future.onResponse((RpcResponse)resp);
+			}
+		}else if(resp instanceof HeartBeatResponse){
+			HostPort hostPort=new HostPort(((HeartBeatResponse) resp).getHost(), ((HeartBeatResponse) resp).getPort());
+			ResponseFuture future = ResponseFuture.HEART_BEAT_FUTURES.remove(hostPort);
+			if(future!=null){
+				future.onResponse((Response)resp);
+			}
 		}
+		
 	}
 }

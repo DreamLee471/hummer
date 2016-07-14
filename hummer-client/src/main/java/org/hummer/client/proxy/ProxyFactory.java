@@ -18,6 +18,7 @@ package org.hummer.client.proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.hummer.api.RpcRequest;
 import org.hummer.api.RpcResponse;
 import org.hummer.api.client.Client;
+import org.hummer.api.client.HostPort;
 import org.hummer.api.exception.HummerRemotingException;
 import org.hummer.api.server.ResponseFuture;
 import org.hummer.client.ClientFactory;
@@ -63,7 +65,35 @@ public class ProxyFactory {
 		
 		public ClientMethodInvocationHandler(ClientMetaData metadata){
 			this.metadata=metadata;
-			addressService.watch(metadata.getService(), metadata.getVersion());
+			if(metadata.getTargetUrl()!=null||metadata.getTargetUrls()!=null){
+				addressService=new AddressService() {
+					
+					public void watch(String service, String version) {
+					}
+					
+					public void registerTarget(String service, String version, String method,
+							String host) {
+					}
+					
+					public void registerTarget(String service, String version, String host) {
+					}
+					
+					public List<String> getTargetAddress(String service, String version,
+							String method) {
+						if(ClientMethodInvocationHandler.this.metadata.getTargetUrl()!=null){
+							return Arrays.asList(ClientMethodInvocationHandler.this.metadata.getTargetUrl());
+						}else{
+							return Arrays.asList(ClientMethodInvocationHandler.this.metadata.getTargetUrls());
+						}
+						
+					}
+					
+					public void deleteAddress(String host) {
+					}
+				};
+			}else{
+				addressService.watch(metadata.getService(), metadata.getVersion());
+			}
 		}
 		
 		public Object invoke(Object proxy, Method method, Object[] args)
@@ -77,20 +107,21 @@ public class ProxyFactory {
 			request.setMethodDecorator(methodDesc);
 			request.setArgs(args);
 			List<String> targetAddress=addressService.getTargetAddress(metadata.getService(), metadata.getVersion(), methodDesc);
-			String target=lbService.select(targetAddress);
-			if(target==null) throw new RuntimeException("can't find target service");
+			HostPort host=lbService.select(targetAddress);
+			if(host==null) throw new RuntimeException("can't find target service");
 			ResponseFuture future=new ResponseFuture();
 			ResponseFuture.RESPONSE_FUTURES.put(request.getRequestId(), future);
-			String[] hostport=target.split(":");
-			Client client=ClientFactory.getClent(hostport[0], Integer.parseInt(hostport[1]));
+			Client client=ClientFactory.getClient(host,metadata.getInvokeType()==ClientMetaData.InvokeTypes.HTTP);
 			client.sendRequest(request);
+			lbService.serviced(host);
 			
 			RpcResponse resp=null;
-			resp=future.get(metadata.getTimeout(), TimeUnit.MILLISECONDS);
+			resp=(RpcResponse)future.get(metadata.getTimeout(), TimeUnit.MILLISECONDS);
 			if(resp==null){
 				//TODO 重试
 				throw new RuntimeException("timeout");
 			}
+			
 			if(ResponseStatus.OK.getCode()==resp.getResponseCode()){
 				return resp.getData();
 			}else if(resp.getResponseCode()==500&&resp.getException()!=null){

@@ -17,8 +17,16 @@ package org.hummer.config;
 
 import java.util.List;
 
+import org.hummer.api.client.HostPort;
+
 public interface LoadBanlanceService {
 	
-	public String select(List<String> addresses);
+	public HostPort select(List<String> addresses);
+	
+	public void registerWeight(HostPort hostPort,double weight);
+	
+	public void rebuild();
+	
+	public void serviced(HostPort host);
 
 }

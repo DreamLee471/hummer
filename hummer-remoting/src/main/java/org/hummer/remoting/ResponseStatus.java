@@ -15,16 +15,20 @@
  */
 package org.hummer.remoting;
 
-public class ResponseStatus {
+public enum ResponseStatus {
 
-	
-	public static final ResponseStatus OK=new ResponseStatus(200, "ok");
-	public static final ResponseStatus NOT_FOUND=new ResponseStatus(404, "service not found");
+	OK(200,"OK"),
+	NOT_FOUND(404,"service not found"),
+	BAD_REQUEST(400,"bad request"),
+	SERVER_PAUSED(402,"server paused"),
+	SERVER_ERROR(500,"server error");
+//	public static final ResponseStatus OK=new ResponseStatus(200, "ok");
+//	public static final ResponseStatus NOT_FOUND=new ResponseStatus(404, "service not found");
 	
 	private int code;
 	private String desc;
 
-	public ResponseStatus(int code, String desc) {
+	private ResponseStatus(int code, String desc) {
 		this.code = code;
 		this.desc = desc;
 	}

@@ -29,6 +29,7 @@ import org.hummer.api.server.Server;
 import org.hummer.config.GolbalConfigurationFactory;
 import org.hummer.remoting.codec.HummerDecoder;
 import org.hummer.remoting.codec.HummerEncoder;
+import org.hummer.server.http.HttpServer;
 
 public class NettyServer implements Server {
 
@@ -37,6 +38,8 @@ public class NettyServer implements Server {
 	private AtomicBoolean started=new AtomicBoolean(false);
 	
 	private AtomicBoolean inited=new AtomicBoolean(false);
+	
+	private AtomicBoolean paused = new AtomicBoolean(false);
 	
 	public void init() {
 		if(!inited.compareAndSet(false, true)){
@@ -57,7 +60,7 @@ public class NettyServer implements Server {
 				protected void initChannel(Channel ch) throws Exception {
 					ch.pipeline().addLast("encoder", new HummerEncoder());
 					ch.pipeline().addLast("decoder", new HummerDecoder());
-					ch.pipeline().addLast("handler", new HummerServerHandler());
+					ch.pipeline().addLast("handler", new HummerServerHandler(NettyServer.this));
 				}
 			});
 	}
@@ -68,9 +71,24 @@ public class NettyServer implements Server {
 		}
 		started.set(true);
 		bootstrap.bind(GolbalConfigurationFactory.getInstance().configure().getServerPort());
+		if(GolbalConfigurationFactory.getInstance().configure().isSupportHttp()){
+			new Thread(new Runnable() {
+				
+				public void run() {
+					HttpServer server=new HttpServer();
+					server.init();
+					server.start();
+				}
+			}, "hummer-http").start();
+		}
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			
 			public void run() {
+				pause();
+				try {
+					Thread.sleep(100000);
+				} catch (InterruptedException e) {
+				}
 				for(Channel channel:HummerServerHandler.channels){
 					channel.close();
 				}
@@ -79,8 +97,7 @@ public class NettyServer implements Server {
 	}
 
 	public void pause() {
-		// TODO Auto-generated method stub
-
+		paused.set(true);
 	}
 
 	public void stop() {
@@ -91,6 +108,10 @@ public class NettyServer implements Server {
 
 	public boolean isStarted() {
 		return started.get();
+	}
+
+	public boolean isPaused() {
+		return paused.get();
 	}
 
 }

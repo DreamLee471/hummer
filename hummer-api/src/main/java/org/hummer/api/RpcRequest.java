@@ -21,7 +21,7 @@ import java.util.Map;
 import org.hummer.api.seralizer.Serializer;
 
 
-public final class RpcRequest{
+public final class RpcRequest implements Request{
 	
 	/**
 	 * 参数的序列化方式

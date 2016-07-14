@@ -26,16 +26,33 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.hummer.api.client.Client;
+import org.hummer.api.client.ClientConfig;
+import org.hummer.api.client.HostPort;
 import org.hummer.remoting.codec.HummerDecoder;
+import org.hummer.util.InitOnce;
 
 public class ClientFactory {
 	
 	private static Bootstrap bootstrap;
 	
-	public static final Map<String, Client> clients=new ConcurrentHashMap<String, Client>();
+	public static final Map<HostPort, Client> clients=new ConcurrentHashMap<HostPort, Client>();
+	
+	private static final ScheduledExecutorService executorServices=Executors.newScheduledThreadPool(1);
+	
+	private static InitOnce<HttpClient> httpClient = InitOnce.init(new Callable<HttpClient>() {
+
+		public HttpClient call() throws Exception {
+			return new HttpClient();
+		}
+	});
 	
 	static{
 		bootstrap=new Bootstrap();
@@ -52,15 +69,36 @@ public class ClientFactory {
 				ch.pipeline().addLast("handler", new ClientHandler());
 			}
 		});
+		
+		executorServices.scheduleAtFixedRate(new HeartBeatThread(), 0, 1000, TimeUnit.MILLISECONDS);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			
+			public void run() {
+				for(Entry<HostPort, Client> client:clients.entrySet()){
+					client.getValue().close();
+				}
+			}
+		}));
+		
+	}
+	
+	public static Client getClient(String host,int port){
+		return getClient(new HostPort(host, port),false);
 	}
 	
 	
-	public static Client getClent(String host,int port){
-		if(clients.get(host+":"+port)!=null) return clients.get(host+":"+port);
-		ChannelFuture future=bootstrap.connect(host, port);
+	public static Client getClient(ClientConfig config){
+		return getClient(config.getHostPort(), config.isHttp());
+	}
+	
+	public static Client getClient(HostPort hostPort,boolean isHttp){
+		if(isHttp) return httpClient.get();
+		if(clients.get(hostPort)!=null) return clients.get(hostPort);
+		ChannelFuture future=bootstrap.connect(hostPort.getHost(), hostPort.getPort());
 		Channel channel=future.channel();
 		NettyClient client=new NettyClient(channel);
-		clients.put(host+":"+port, client);
+		clients.put(hostPort, client);
 		return client;
 	}
 

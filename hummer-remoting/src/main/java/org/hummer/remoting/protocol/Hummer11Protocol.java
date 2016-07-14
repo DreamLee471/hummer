@@ -54,12 +54,22 @@ public class Hummer11Protocol implements HummerProtocol{
 
 	private void encodeHeartBeatResponse(HeartBeatResponse msg,
 			ByteBufferWraper byteBuf) {
-		//TODO 编码心跳响应
+		byteBuf.writeByte((byte)HEART_BEAT_RESPONSE);
+		byteBuf.writeInt(msg.getHost().length());
+		byteBuf.writeBytes(msg.getHost().getBytes());
+		byteBuf.writeInt(msg.getPort());
+		byteBuf.writeLong(msg.getRequestTimestamp());
+		byteBuf.writeLong(msg.getResponseTimestamp());
+		byteBuf.writeLong(msg.getSystemLoad());
 	}
 
 	private void encodeHeartBeatRequest(HeartBeatRequest msg,
 			ByteBufferWraper byteBuf) {
-		//TODO 编码心跳请求
+		byteBuf.writeByte((byte)HEART_BEAT_REQUEST);
+		byteBuf.writeInt(msg.getHost().length());
+		byteBuf.writeBytes(msg.getHost().getBytes());
+		byteBuf.writeInt(msg.getPort());
+		byteBuf.writeLong(msg.getTimestamp());
 	}
 
 	private void encodeResponse(RpcResponse resp, ByteBufferWraper byteBuf) {
@@ -128,8 +138,34 @@ public class Hummer11Protocol implements HummerProtocol{
 			return decodeRequest(byteBuf);
 		case RESPONSE:
 			return decodeResponse(byteBuf);
+		case HEART_BEAT_REQUEST:
+			return decodeHeartRequest(byteBuf);
+		case HEART_BEAT_RESPONSE:
+			return decodeHeartResponse(byteBuf);
 		}
 		throw new ProtocolException("错误的协议");
+	}
+
+	private Object decodeHeartRequest(ByteBufferWraper byteBuf) {
+		int hostLength=byteBuf.readInt();
+		byte[] hostBytes=new byte[hostLength];
+		byteBuf.readBytes(hostBytes);
+		String host=new String(hostBytes);
+		int port=byteBuf.readInt();
+		long timestamp=byteBuf.readLong();
+		return new HeartBeatRequest(host,port,timestamp);
+	}
+
+	private Object decodeHeartResponse(ByteBufferWraper byteBuf) {
+		int hostLength=byteBuf.readInt();
+		byte[] hostBytes=new byte[hostLength];
+		byteBuf.readBytes(hostBytes);
+		String host=new String(hostBytes);
+		int port=byteBuf.readInt();
+		long requestTimestamp=byteBuf.readLong();
+		long responseTimestamp=byteBuf.readLong();
+		long systemLoad=byteBuf.readLong();
+		return new HeartBeatResponse(host, port, requestTimestamp, responseTimestamp,systemLoad);
 	}
 
 	private Object decodeResponse(ByteBufferWraper byteBuf) {

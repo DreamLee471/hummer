@@ -102,6 +102,10 @@ public class HummerAddressService implements AddressService {
 				Object obj=evt.getArg();
 				if(obj instanceof Collection){
 					Collection<String> collection=(Collection<String>)obj;
+					if(collection == null || collection.isEmpty()){
+						//防空判断，如果是空的，则保护原有的地址
+						return;
+					}
 					for(Iterator<String> iter=collection.iterator();iter.hasNext();){
 						registerTarget(service, version, iter.next());
 					}

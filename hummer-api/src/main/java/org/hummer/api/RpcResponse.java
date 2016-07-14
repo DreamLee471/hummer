@@ -17,7 +17,7 @@ package org.hummer.api;
 
 import org.hummer.api.seralizer.Serializer;
 
-public final class RpcResponse {
+public final class RpcResponse implements Response{
 	
 	/**
 	 * 参数的序列化方式

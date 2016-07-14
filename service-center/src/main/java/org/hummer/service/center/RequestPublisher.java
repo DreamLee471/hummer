@@ -30,7 +30,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.hummer.api.RpcRequest;
+import org.hummer.api.Request;
 import org.hummer.api.event.Publisher;
 import org.hummer.api.event.RequestEvent;
 import org.hummer.config.GolbalConfigurationFactory;
@@ -40,7 +40,7 @@ import com.lmax.disruptor.BatchEventProcessor;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.SequenceBarrier;
 
-public class RequestPublisher implements Publisher<RpcRequest>{
+public class RequestPublisher implements Publisher<Request>{
 	public static final int BUFFER_SIZE = 128;
 
 	private RingBuffer<RequestEvent>[] ringBuffers;
@@ -77,7 +77,7 @@ public class RequestPublisher implements Publisher<RpcRequest>{
 	 * @param channel
 	 * @param resp
 	 */
-	public void publish(Channel channel,RpcRequest request){
+	public void publish(Channel channel,Request request){
 		RingBuffer<RequestEvent> ringBuffer=ringBuffers[random.get().nextInt(GolbalConfigurationFactory.getInstance().configure().getServerEventChannelNum())];
 		long index=ringBuffer.next(1);
 		RequestEvent event=ringBuffer.get(index);

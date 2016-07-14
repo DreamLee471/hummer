@@ -13,24 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hummer.client;
+package org.hummer.server.http;
 
-import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.HttpRequest;
 
-import org.hummer.api.Response;
-import org.hummer.api.event.Publisher;
-import org.hummer.service.ServiceLocator;
+public interface RequestHandler {
+	
+	public void handle(HttpRequest request,ChannelHandlerContext ctx) throws Exception;
 
-public class ClientHandler extends ChannelHandlerAdapter{
-	
-	@SuppressWarnings("unchecked")
-	private Publisher<Response> responsePublisher=ServiceLocator.loadService(Publisher.class, "response");
-	
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg)
-			throws Exception {
-		responsePublisher.publish(ctx.channel(), (Response)msg);
-	}
-	
 }

@@ -15,6 +15,12 @@
  */
 package org.hummer.config;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import org.hummer.api.exception.HummerConfigException;
 
 import com.lmax.disruptor.BlockingWaitStrategy;
@@ -27,12 +33,47 @@ public class GolbalConfigurationFactory {
 	
 	private static GolbalConfigurationFactory instance;
 	
+	static{
+		URL resource = GolbalConfigurationFactory.class.getClassLoader().getResource("hummer.properties");
+		if(resource!=null){
+			try {
+				Properties prop=new Properties();
+				prop.load(resource.openStream());
+				for(Entry<Object, Object> entry:prop.entrySet()){
+					initConfiguration((String)entry.getKey(),(String)entry.getValue(),GolbalConfigurationFactory.getInstance());
+				}
+				GolbalConfigurationFactory.getInstance().configure();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private GolbalConfiguration configuration;
 	
 	private GolbalConfigurationFactory(){
 		configuration=new GolbalConfiguration();
 	}
 	
+	private static void initConfiguration(String name,String value,
+			GolbalConfigurationFactory instance2) throws SecurityException, NoSuchMethodException, NumberFormatException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		Method method=null;
+		Method[] methods = GolbalConfigurationFactory.class.getMethods();
+		for(Method m:methods){
+			if(m.getName().equals(name)){
+				method=m;
+			}
+		}
+		if(method==null){
+			throw new NoSuchMethodException(name);
+		}
+		if(method.getParameterTypes()[0]==int.class){
+			method.invoke(instance2, new Object[]{Integer.valueOf(value)});
+		}else{
+			method.invoke(instance2, new Object[]{value});
+		}
+	}
+
 	public static GolbalConfigurationFactory getInstance(){
 		if(instance==null){
 			instance=new GolbalConfigurationFactory();
@@ -121,6 +162,24 @@ public class GolbalConfigurationFactory {
 		return this;
 	}
 	
+	public GolbalConfigurationFactory supportHttp(String supportHttp){
+		check();
+		configuration.supportHttp=Boolean.valueOf(supportHttp);
+		return this;
+	}
+	
+	public GolbalConfigurationFactory ssl(String ssl){
+		check();
+		configuration.ssl=Boolean.valueOf(ssl);
+		return this;
+	}
+	
+	public GolbalConfigurationFactory respType(String type){
+		check();
+		configuration.respType=type;
+		return this;
+	}
+	
 	public GolbalConfiguration configure(){
 		if(!configed) configed=true;
 		return configuration;
@@ -146,6 +205,12 @@ public class GolbalConfigurationFactory {
 		private int serverEventChannelNum=4;
 		
 		private String serverCoreUse="ps/2";
+		
+		private boolean supportHttp=true;
+		
+		private boolean ssl=false;
+		
+		private String respType="json";
 		
 		private GolbalConfiguration(){}
 		
@@ -194,6 +259,18 @@ public class GolbalConfigurationFactory {
 
 		public String getServerCoreUse() {
 			return serverCoreUse;
+		}
+
+		public boolean isSupportHttp() {
+			return supportHttp;
+		}
+
+		public boolean isSsl() {
+			return ssl;
+		}
+
+		public String getRespType() {
+			return respType;
 		}
 	}
 

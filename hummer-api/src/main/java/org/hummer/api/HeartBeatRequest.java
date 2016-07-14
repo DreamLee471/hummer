@@ -15,8 +15,27 @@
  */
 package org.hummer.api;
 
-public class HeartBeatRequest {
+public final class HeartBeatRequest implements Request{
 	
+	private final String host;
+	private final int port;
+	private final long timestamp;
 	
+	public HeartBeatRequest(String host, int port, long timestamp) {
+		this.host = host;
+		this.port = port;
+		this.timestamp = timestamp;
+	}
 
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
 }

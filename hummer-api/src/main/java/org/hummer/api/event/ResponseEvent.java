@@ -17,14 +17,14 @@ package org.hummer.api.event;
 
 import io.netty.channel.Channel;
 
-import org.hummer.api.RpcResponse;
+import org.hummer.api.Response;
 
 import com.lmax.disruptor.EventFactory;
 
 public class ResponseEvent {
 
 	private Channel channel;
-	private RpcResponse response;
+	private Response response;
 	
 	public Channel getChannel() {
 		return channel;
@@ -34,11 +34,11 @@ public class ResponseEvent {
 		this.channel = channel;
 	}
 
-	public RpcResponse getResponse() {
+	public Response getResponse() {
 		return response;
 	}
 
-	public void setResponse(RpcResponse response) {
+	public void setResponse(Response response) {
 		this.response = response;
 	}
 

@@ -15,10 +15,16 @@
  */
 package org.hummer.api.client;
 
-import org.hummer.api.RpcRequest;
+import org.hummer.api.Request;
 
 public interface Client {
 	
-	public void sendRequest(RpcRequest request);
+	/**
+	 * 此方法必须为异步，不能阻塞调用
+	 * @param request
+	 */
+	public void sendRequest(Request request);
+	
+	public void close();
 	
 }
