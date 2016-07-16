@@ -46,9 +46,7 @@ public class ServiceRegistry {
 	private static ConcurrentHashMap<String, Map<String, ServiceMethodWraper>> SERVICES = new ConcurrentHashMap<String, Map<String, ServiceMethodWraper>>(
 			256);
 	
-	
 	private static ConcurrentHashMap<String, List<HummerInterceptor<?>>> INTERCEPTORS = new ConcurrentHashMap<String, List<HummerInterceptor<?>>>();
-	
 	private static NettyServer server=new NettyServer();
 
 	public static void registerService(ServiceMetadata metadata) {
@@ -102,7 +100,6 @@ public class ServiceRegistry {
 		return INTERCEPTORS.get(service);
 	}
  	
-	
 	public static void removeService(ServiceMetadata metadata){
 		String service=metadata.getServiceName();
 		String version=metadata.getVersion();

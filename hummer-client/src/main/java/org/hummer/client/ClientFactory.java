@@ -38,6 +38,8 @@ import org.hummer.api.client.ClientConfig;
 import org.hummer.api.client.HostPort;
 import org.hummer.remoting.codec.HummerDecoder;
 import org.hummer.util.InitOnce;
+import org.hummer.api.client.HostPort;
+import org.hummer.remoting.codec.HummerDecoder;
 
 public class ClientFactory {
 	
@@ -53,6 +55,8 @@ public class ClientFactory {
 			return new HttpClient();
 		}
 	});
+	
+	private static HttpClient httpClient=new HttpClient();
 	
 	static{
 		bootstrap=new Bootstrap();
