@@ -5,23 +5,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-<<<<<<< HEAD
-import org.hummer.client.conf.ClientMetaData;
-import org.hummer.client.proxy.ProxyFactory;
-import org.hummer.service.test.IHello;
-
-import junit.framework.TestCase;
-
-public class ServerTest extends TestCase {
-
-=======
-import junit.framework.TestCase;
-
 import org.hummer.api.RpcRequest;
 import org.hummer.client.conf.ClientMetaData;
 import org.hummer.client.proxy.ProxyFactory;
 import org.hummer.serialize.HessianSerializer;
 import org.hummer.service.test.IHello;
+
+import junit.framework.TestCase;
 
 public class ServerTest extends TestCase {
 
@@ -47,7 +37,6 @@ public class ServerTest extends TestCase {
 		request.setArgs(new Object[] { "world" });
 	}
 
->>>>>>> 6687350455688fc82afda98649e559d64f03ee27
 	public void testServerService() throws Exception {
 		long start=System.currentTimeMillis();
 		ClientMetaData metadata=new ClientMetaData();

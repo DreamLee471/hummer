@@ -56,8 +56,6 @@ public class ClientFactory {
 		}
 	});
 	
-	private static HttpClient httpClient=new HttpClient();
-	
 	static{
 		bootstrap=new Bootstrap();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
