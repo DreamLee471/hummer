@@ -15,6 +15,10 @@
  */
 package org.hummer.spring.beans;
 
+import java.util.List;
+
+import org.hummer.api.RpcRequest;
+import org.hummer.api.interceptor.HummerInterceptor;
 import org.hummer.api.service.ServiceMetadata;
 import org.hummer.service.center.register.ServiceRegistry;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,6 +28,8 @@ public class ServiceBean implements InitializingBean {
 	private String service;
 	private String version;
 	private Object ref;
+	
+	private List<HummerInterceptor<RpcRequest>> interceptors;
 	
 	public void afterPropertiesSet() throws Exception {
 		ServiceMetadata metadata = new ServiceMetadata();
@@ -57,4 +63,16 @@ public class ServiceBean implements InitializingBean {
 	public void setRef(Object ref) {
 		this.ref = ref;
 	}
+
+
+	public List<HummerInterceptor<RpcRequest>> getInterceptors() {
+		return interceptors;
+	}
+
+
+	public void setInterceptors(List<HummerInterceptor<RpcRequest>> interceptors) {
+		this.interceptors = interceptors;
+	}
+	
+	
 }

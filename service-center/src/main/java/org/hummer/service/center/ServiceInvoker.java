@@ -15,9 +15,12 @@
  */
 package org.hummer.service.center;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hummer.api.RpcRequest;
 import org.hummer.api.RpcResponse;
+import org.hummer.api.interceptor.HummerInterceptor;
 import org.hummer.remoting.ResponseStatus;
 import org.hummer.service.center.register.ServiceRegistry;
 import org.hummer.service.center.register.ServiceRegistry.ServiceMethodWraper;
@@ -47,8 +50,15 @@ public class ServiceInvoker {
 		if(m==null){
 			resp.setResponseCode(ResponseStatus.NOT_FOUND.getCode());
 			resp.setResponseDesc(ResponseStatus.NOT_FOUND.getDesc());
+			return resp;
 		}
 		try{
+			List<HummerInterceptor<?>> interceptors = ServiceRegistry.getInterceptors(request.getServiceName()+":"+request.getVersion());
+			if(interceptors != null){
+				for(HummerInterceptor inter : interceptors){
+					inter.handle(request);
+				}
+			}
 			Object ret=m.getMethod().invoke(m.getService(), request.getArgs());
 			resp.setData(ret);
 			resp.setResponseCode(ResponseStatus.OK.getCode());

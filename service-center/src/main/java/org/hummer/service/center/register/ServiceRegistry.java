@@ -16,9 +16,12 @@
 package org.hummer.service.center.register;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.hummer.api.interceptor.HummerInterceptor;
 import org.hummer.api.service.ServiceMetadata;
 import org.hummer.config.ConfigCommetService;
 import org.hummer.server.NettyServer;
@@ -42,6 +45,9 @@ public class ServiceRegistry {
 	 */
 	private static ConcurrentHashMap<String, Map<String, ServiceMethodWraper>> SERVICES = new ConcurrentHashMap<String, Map<String, ServiceMethodWraper>>(
 			256);
+	
+	
+	private static ConcurrentHashMap<String, List<HummerInterceptor<?>>> INTERCEPTORS = new ConcurrentHashMap<String, List<HummerInterceptor<?>>>();
 	
 	private static NettyServer server=new NettyServer();
 
@@ -73,6 +79,29 @@ public class ServiceRegistry {
 		}
 	}
 	
+	/**
+	 * 注册拦截器
+	 * @param service
+	 * @param interceptors
+	 */
+	public static void registerInterceptor(String service,List<HummerInterceptor<?>> interceptors){
+		List<HummerInterceptor<?>> ins = INTERCEPTORS.get(service);
+		if(ins == null){
+			ins=new ArrayList<HummerInterceptor<?>>();
+			INTERCEPTORS.put(service, ins);
+		}
+		ins.addAll(interceptors);
+	}
+	
+	/**
+	 * 获取拦截器
+	 * @param service
+	 * @return
+	 */
+	public static  List<HummerInterceptor<?>> getInterceptors(String service){
+		return INTERCEPTORS.get(service);
+	}
+ 	
 	
 	public static void removeService(ServiceMetadata metadata){
 		String service=metadata.getServiceName();
